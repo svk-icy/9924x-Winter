@@ -10,6 +10,22 @@ const int DRIVE_SPEED = 110;
 const int TURN_SPEED = 90;
 const int SWING_SPEED = 110;
 
+void intake(int vel, int time) {
+  intake_s1.move(vel);
+  pros::delay(time);
+  intake_s1.move(0);
+}
+
+void lever(int vel, int time) {
+  hood.set(true);
+  levermotor.move(vel);
+  pros::delay(time);
+  levermotor.move(-(vel));
+  pros::delay(time);
+  hood.set(false);
+  levermotor.set_brake_mode(MOTOR_BRAKE_HOLD);
+  levermotor.move(0);
+}
 ///
 // Constants
 ///
@@ -28,7 +44,7 @@ void default_constants() {
   chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
   chassis.pid_odom_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 750_ms);
-  chassis.pid_odom_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 750_ms);
+  chassis.pid_odom_drive_exit_condition_set(80_ms, 0.5_in, 250_ms, 1.5_in, 500_ms, 750_ms);
   chassis.pid_turn_chain_constant_set(3_deg);
   chassis.pid_swing_chain_constant_set(5_deg);
   chassis.pid_drive_chain_constant_set(3_in);
@@ -40,9 +56,9 @@ void default_constants() {
 
   // The amount that turns are prioritized over driving in odom motions
   // - if you have tracking wheels, you can run this higher.  1.0 is the max
-  chassis.odom_turn_bias_set(0.9);
+  chassis.odom_turn_bias_set(0.5);
 
-  chassis.odom_look_ahead_set(10_in);          // This is how far ahead in the path the robot looks at
+  chassis.odom_look_ahead_set(35_in);          // This is how far ahead in the path the robot looks at
   chassis.odom_boomerang_distance_set(16_in);  // This sets the maximum distance away from target that the carrot point can be
   chassis.odom_boomerang_dlead_set(0.625);     // This handles how aggressive the end of boomerang motions are
 
@@ -52,22 +68,59 @@ void default_constants() {
 void blue_midgoal() {
   chassis.drive_angle_set(0);
   chassis.odom_xy_set(0, 0);
-
+  lift.set(true);
   intake_s1.move(-127);
 
-  chassis.pid_odom_set({{4.5_in, 29.9_in}, fwd, 127}, false);
+  chassis.pid_odom_set({{5.21_in, 39.5_in}, fwd, 127}, false);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-8_in, 127, false);
   chassis.pid_wait();
 
-  chassis.pid_turn_set({10.2, 34.9}, rev, 127);
+  chassis.pid_turn_set(259_deg, 127, fwd);
   chassis.pid_wait();
+
+  chassis.pid_odom_set({{23.7, 41.0}, rev, 80});
+  chassis.pid_wait();
+
+  lever(-100, 1000);
+
+  chassis.pid_odom_set({{-37.6, 25.52}, fwd, 127});
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(213_deg, 127, fwd);
+  chassis.pid_wait();
+  scraper.set(true);
+
+  chassis.pid_odom_set({{-38.0, 12.7}, fwd, 127});
+  chassis.pid_wait();
+
+  /*pros::delay(100);
+  chassis.pid_drive_set(-20_in, 127, false);
+  chassis.pid_wait();
+  scraper.set(false);
+  lift.set(false);
+
+  lever(-127, 1000);*/
+}
+
+void red_midgoal() {
+}
+void blue_lowgoal() {
+}
+
+void red_lowgoal() {
+}
+
+void wing_rush() {
+}
+
+void blue_sawp() {
+}
+void red_sawp() {
 }
 
 void linear_pid() {
-  chassis.pid_drive_set(24_in, 127, false);
-  chassis.pid_wait();
-
-  /*chassis.pid_drive_set(-24_in, 127, true);
-  chassis.pid_wait();*/
+  lever(-100, 600);
 }
 
 void turn_pid() {
