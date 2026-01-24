@@ -8,12 +8,12 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-15, -16, 17},  // Left Chassis Ports (negative port will reverse it!)
-    {-12, 13, 14},   // Right Chassis Ports (negative port will reverse it!)
+    {-17, -16, 15},  // Left Chassis Ports (negative port will reverse it!)
+    {-14, 13, 12},   // Right Chassis Ports (negative port will reverse it!)
 
-    19,    // IMU Port
-    3.25,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-    450);  // Wheel RPM = cartridge * (motor gear / wheel gear)
+    19,      // IMU Port
+    3.2224,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+    450);    // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 // Uncomment the trackers you're using here!
 // - `8` and `9` are smart ports (making these negative will reverse the sensor)
@@ -21,7 +21,7 @@ ez::Drive chassis(
 // - `2.75` is the wheel diameter
 // - `4.0` is the distance from the center of the wheel to the center of the robot
 // ez::tracking_wheel horiz_tracker(8, 2.75, 4.0);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_tracker(-2, 2.125, -0.46);  // This tracking wheel is parallel to the drive wheels
+// ez::tracking_wheel vert_tracker(-2, 1.9342, -0.46);  // This tracking wheel is parallel to the drive wheels
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -42,7 +42,7 @@ void initialize() {
   // Look at your vertical tracking wheel and decide if it's to the left or right of the center of the robot
   //  - change `left` to `right` if the tracking wheel is to the right of the centerline
   //  - ignore this if you aren't using a vertical tracker
-  chassis.odom_tracker_left_set(&vert_tracker);
+  // chassis.odom_tracker_left_set(&vert_tracker);
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(true);   // Enables modifying the controller curve with buttons on the joysticks
@@ -58,8 +58,8 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"blue mid goal ", blue_midgoal},
       {"linear pid", linear_pid},
+      {"blue mid goal ", blue_midgoal},
       {"turn pid", turn_pid},
       {"Drive\n\nDrive forward and come back", drive_example},
       {"Turn\n\nTurn 3 times.", turn_example},
@@ -177,6 +177,10 @@ void ez_screen_task() {
           screen_print_tracker(chassis.odom_tracker_right, "r", 5);
           screen_print_tracker(chassis.odom_tracker_back, "b", 6);
           screen_print_tracker(chassis.odom_tracker_front, "f", 7);
+        } else if (ez::as::page_blank_is_on(1)) {
+          ez::screen_print("Left: " + util::to_string_with_precision(chassis.drive_sensor_left()) +
+                               "\nRight: " + util::to_string_with_precision(chassis.drive_sensor_right()),
+                           1);
         }
       }
     }
@@ -264,7 +268,7 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
     bool up_high = master.get_digital(pros::E_CONTROLLER_DIGITAL_Y);
-    bool up_mid = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
+    bool up_mid = master.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 
     int cmd = 0;
     // old one
@@ -345,6 +349,11 @@ void opcontrol() {
       intake_s1.move(75);
     } else {
       intake_s1.move(0);
+    }
+
+    if (master.get_digital(DIGITAL_L1)) {
+      chassis.odom_reset();
+      chassis.drive_sensor_reset();
     }
 
     wing.button_toggle(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A));
