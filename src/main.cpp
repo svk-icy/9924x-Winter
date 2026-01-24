@@ -11,9 +11,9 @@ ez::Drive chassis(
     {-17, -16, 15},  // Left Chassis Ports (negative port will reverse it!)
     {-14, 13, 12},   // Right Chassis Ports (negative port will reverse it!)
 
-    19,      // IMU Port
-    3.2224,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-    450);    // Wheel RPM = cartridge * (motor gear / wheel gear)
+    19,    // IMU Port
+    3.22,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+    450);  // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 // Uncomment the trackers you're using here!
 // - `8` and `9` are smart ports (making these negative will reverse the sensor)
@@ -268,7 +268,7 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
     bool up_high = master.get_digital(pros::E_CONTROLLER_DIGITAL_Y);
-    bool up_mid = master.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
+    bool up_mid = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 
     int cmd = 0;
     // old one
