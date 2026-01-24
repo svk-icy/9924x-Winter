@@ -18,6 +18,14 @@ inline ez::Piston hood('H');
 inline ez::Piston lift('E');
 inline pros::adi::DigitalIn bumper('A');
 
+inline pros::Motor lf(-17);
+inline pros::Motor lm(-16);
+inline pros::Motor lb(15);
+
+inline pros::Motor rf(-12);
+inline pros::Motor rm(-13);
+inline pros::Motor rb(14);
+
 // functions
 void lever_set(double Target);
 void sepLevermacro();

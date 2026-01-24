@@ -178,8 +178,12 @@ void ez_screen_task() {
           screen_print_tracker(chassis.odom_tracker_back, "b", 6);
           screen_print_tracker(chassis.odom_tracker_front, "f", 7);
         } else if (ez::as::page_blank_is_on(1)) {
-          ez::screen_print("Left: " + util::to_string_with_precision(chassis.drive_sensor_left()) +
-                               "\nRight: " + util::to_string_with_precision(chassis.drive_sensor_right()),
+          ez::screen_print("Left Front: " + util::to_string_with_precision(lf.get_position()) +
+                               "\nLeft Middle: " + util::to_string_with_precision(lm.get_position()) +
+                               "\nLeft Middle: " + util::to_string_with_precision(lb.get_position()) +
+                               "\n Right Front: " + util::to_string_with_precision(rf.get_position()) +
+                               "\n Right Middle: " + util::to_string_with_precision(rm.get_position()) +
+                               "\n Right Back: " + util::to_string_with_precision(rb.get_position()),
                            1);
         }
       }
