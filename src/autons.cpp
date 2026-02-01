@@ -22,6 +22,7 @@ void lever(int vel, int time) {
   pros::delay(time);
   levermotor.move(-(vel));
   pros::delay(time);
+  pros::delay(50);
   hood.set(false);
   levermotor.set_brake_mode(MOTOR_BRAKE_HOLD);
   levermotor.move(0);
@@ -32,7 +33,7 @@ void lever(int vel, int time) {
 void default_constants() {
   // P, I, D, and Start I
 
-  chassis.pid_drive_constants_set(1.9, 0.4, 34.25);
+  chassis.pid_drive_constants_set(16.5, 0.4, 25.0);
   chassis.pid_heading_constants_set(11.0, 0.0, 20.0);        // Holds the robot straight while going forward without odom
   chassis.pid_turn_constants_set(3.15, 0.05, 30.0, 12.5);    // Turn in place constants
   chassis.pid_swing_constants_set(6.0, 0.0, 65.0);           // Swing constants
@@ -42,9 +43,9 @@ void default_constants() {
   // Exit conditions
   chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
   chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
-  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
+  chassis.pid_drive_exit_condition_set(80_ms, 1.7_in, 250_ms, 2.7_in, 500_ms, 500_ms);
   chassis.pid_odom_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 750_ms);
-  chassis.pid_odom_drive_exit_condition_set(80_ms, 1.2_in, 250_ms, 2.7_in, 500_ms, 750_ms);
+  chassis.pid_odom_drive_exit_condition_set(80_ms, 1.2_in, 170_ms, 2.7_in, 2000_ms, 750_ms);
   chassis.pid_turn_chain_constant_set(3_deg);
   chassis.pid_swing_chain_constant_set(5_deg);
   chassis.pid_drive_chain_constant_set(3_in);
@@ -58,28 +59,80 @@ void default_constants() {
   // - if you have tracking wheels, you can run this higher.  1.0 is the max
   chassis.odom_turn_bias_set(0.5);
 
-  chassis.odom_look_ahead_set(20_in);          // This is how far ahead in the path the robot looks at
+  chassis.odom_look_ahead_set(9_in);           // This is how far ahead in the path the robot looks at
   chassis.odom_boomerang_distance_set(16_in);  // This sets the maximum distance away from target that the carrot point can be
   chassis.odom_boomerang_dlead_set(0.625);     // This handles how aggressive the end of boomerang motions are
 
   chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
 }
 
-void blue_midgoal() {
+void midgoal() {
+  chassis.drive_sensor_reset();
   chassis.drive_angle_set(0);
   chassis.odom_xy_set(0, 0);
+  scraper.set(false);
   lift.set(true);
   intake_s1.move(-127);
 
-  chassis.pid_odom_set({{5.21_in, 39.5_in}, fwd, 127}, false);
-  chassis.pid_wait();
-  chassis.pid_drive_set(-8_in, 127, false);
+  chassis.pid_drive_set(32.71_in, 60, false);
+  chassis.pid_wait_until(15.71_in);
+  scraper.set(true);
+
   chassis.pid_wait();
 
-  chassis.pid_turn_set(259_deg, 127, fwd);
+  chassis.pid_drive_set(-2.8_in, 60, false);
   chassis.pid_wait();
 
-  chassis.pid_odom_set({{23.7, 41.0}, rev, 80});
+  chassis.pid_turn_set(250_deg, 127, fwd);
+  chassis.pid_wait();
+
+  intake_s1.move(0);
+
+  chassis.pid_drive_set(-19_in, 90, false);
+  chassis.pid_wait();
+
+  lever(-70, 500);
+  lift.set(false);
+
+  intake_s1.move(-127);
+
+  chassis.pid_turn_set(260_deg, 127, false);
+
+  chassis.pid_odom_set({{-31.31, 25.97}, fwd, 100});
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(209_deg, 127, false);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(14.75_in, 75, false);
+  chassis.pid_wait();
+
+  pros::delay(800);
+
+  chassis.pid_drive_set(-33.25_in, 120, false);
+  chassis.pid_wait_until(-30.25_in);
+  lever(-90, 1000);
+  scraper.set(false);
+
+  chassis.pid_turn_set(120_deg, 127, false);
+  chassis.pid_wait();
+
+  wing.set(true);
+
+  chassis.pid_drive_set(1_in, 50, false);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(0_deg, 127, false);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(15_in, 60, false);
+  chassis.pid_wait_until(14_in);
+  wing.set(false);
+
+  chassis.pid_turn_set(75_deg, 127, false);
+  chassis.pid_wait();
+
+  /*chassis.pid_odom_set({{23.7, 41.0}, rev, 80});
   chassis.pid_wait();
 
   lever(-100, 700);
@@ -103,9 +156,53 @@ void blue_midgoal() {
   lever(-127, 1000);*/
 }
 
-void red_midgoal() {
-}
-void blue_lowgoal() {
+void lowgoal() {
+  intake_s1.move(-127);
+  chassis.pid_odom_set({{0, 42.1}, fwd, 110});
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(90_deg, 127, false);
+  chassis.pid_wait();
+
+  scraper.set(true);
+
+  pros::delay(500);
+
+  chassis.pid_drive_set(10_in, 75, false);
+  chassis.pid_wait();
+
+  pros::delay(600);
+
+  chassis.pid_turn_set(92_deg, 127, false);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-34.25_in, 100, false);
+  chassis.pid_wait_until(-31.25_in);
+
+  intake_s1.move(0);
+  lever(-127, 1000);
+  scraper.set(false);
+
+  intake_s1.move(-127);
+
+  chassis.pid_turn_set(183_deg, 80, false);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(18_in, 50, false);
+  chassis.pid_wait_until(3_in);
+  scraper.set(true);
+
+  pros::delay(100);
+
+  chassis.pid_turn_set(225_deg, 127, false);
+  chassis.pid_wait();
+
+  scraper.set(false);
+
+  chassis.pid_drive_set(18.25_in, 70, false);
+  chassis.pid_wait();
+
+  intake(70, 3000);
 }
 
 void red_lowgoal() {
@@ -114,7 +211,72 @@ void red_lowgoal() {
 void wing_rush() {
 }
 
-void blue_sawp() {
+void sawp() {
+  chassis.drive_sensor_reset();
+  chassis.drive_angle_set(0);
+  chassis.odom_xy_set(0, 0);
+  scraper.set(false);
+  lift.set(true);
+  intake_s1.move(-127);
+
+  chassis.pid_drive_set(32.71_in, 60, false);
+  chassis.pid_wait_until(15.71_in);
+  scraper.set(true);
+
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-2.8_in, 60, false);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(250_deg, 127, fwd);
+  chassis.pid_wait();
+
+  intake_s1.move(0);
+
+  chassis.pid_drive_set(-19_in, 90, false);
+  chassis.pid_wait();
+
+  lever(-70, 500);
+  lift.set(false);
+
+  intake_s1.move(-127);
+
+  chassis.pid_turn_set(260_deg, 127, false);
+
+  chassis.pid_odom_set({{-31.31, 25.97}, fwd, 100});
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(209_deg, 127, false);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(14.75_in, 75, false);
+  chassis.pid_wait();
+
+  pros::delay(800);
+
+  chassis.pid_drive_set(-33.25_in, 120, false);
+  chassis.pid_wait_until(-30.25_in);
+  lever(-127, 1000);
+  scraper.set(false);
+  intake_s1.move(-127);
+  chassis.pid_turn_set(115_deg, 127, false);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(58_in, 100, false);
+  chassis.pid_wait_until(52_in);
+  scraper.set(true);
+
+  pros::delay(500);
+
+  chassis.pid_turn_set(356_deg, 127, false);
+  chassis.pid_wait();
+  scraper.set(false);
+  pros::delay(500);
+
+  chassis.pid_drive_set(15_in, 100, false);
+  chassis.pid_wait();
+
+  intake(70, 3000);
 }
 void red_sawp() {
 }

@@ -8,8 +8,8 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-17, -16, 15},  // Left Chassis Ports (negative port will reverse it!)
-    {-14, 13, 12},   // Right Chassis Ports (negative port will reverse it!)
+    {-15, -16, 17},  // Left Chassis Ports (negative port will reverse it!)
+    {-12, 13, 14},   // Right Chassis Ports (negative port will reverse it!)
 
     19,    // IMU Port
     3.22,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
@@ -21,7 +21,7 @@ ez::Drive chassis(
 // - `2.75` is the wheel diameter
 // - `4.0` is the distance from the center of the wheel to the center of the robot
 // ez::tracking_wheel horiz_tracker(8, 2.75, 4.0);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_tracker(-2, 1.9342, -0.46);  // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_tracker(-2, 2, -0.46);  // This tracking wheel is parallel to the drive wheels
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -58,8 +58,9 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"linear pid", linear_pid},
-      {"blue mid goal ", blue_midgoal},
+      {"mid goal ", midgoal},
+      {"low goal ", lowgoal},
+      {"Solo awp", sawp},
       {"turn pid", turn_pid},
       {"Drive\n\nDrive forward and come back", drive_example},
       {"Turn\n\nTurn 3 times.", turn_example},
@@ -178,12 +179,8 @@ void ez_screen_task() {
           screen_print_tracker(chassis.odom_tracker_back, "b", 6);
           screen_print_tracker(chassis.odom_tracker_front, "f", 7);
         } else if (ez::as::page_blank_is_on(1)) {
-          ez::screen_print("Left Front: " + util::to_string_with_precision(lf.get_position()) +
-                               "\nLeft Middle: " + util::to_string_with_precision(lm.get_position()) +
-                               "\nLeft Middle: " + util::to_string_with_precision(lb.get_position()) +
-                               "\n Right Front: " + util::to_string_with_precision(rf.get_position()) +
-                               "\n Right Middle: " + util::to_string_with_precision(rm.get_position()) +
-                               "\n Right Back: " + util::to_string_with_precision(rb.get_position()),
+          ez::screen_print("Left: " + util::to_string_with_precision(chassis.drive_sensor_left()) +
+                               "\nRight: " + util::to_string_with_precision(chassis.drive_sensor_right()),
                            1);
         }
       }
@@ -324,8 +321,8 @@ void opcontrol() {
       cmd = 25;
       rewinding = true;
       launching = false;
-    } else {
       hood.set(false);
+    } else {
       cmd = 0;
     }
 
@@ -350,7 +347,7 @@ void opcontrol() {
     if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
       intake_s1.move(-127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-      intake_s1.move(75);
+      intake_s1.move(100);
     } else {
       intake_s1.move(0);
     }
