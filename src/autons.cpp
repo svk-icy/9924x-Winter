@@ -256,10 +256,10 @@ void sawp() {
 
   chassis.pid_drive_set(-33.25_in, 120, false);
   chassis.pid_wait_until(-30.25_in);
-  lever(-127, 1000);
+  lever(-110, 600);
   scraper.set(false);
   intake_s1.move(-127);
-  chassis.pid_turn_set(115_deg, 127, false);
+  chassis.pid_turn_set(110_deg, 127, false);
   chassis.pid_wait();
 
   chassis.pid_drive_set(58_in, 100, false);
