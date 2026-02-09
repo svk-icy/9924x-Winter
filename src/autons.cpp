@@ -86,11 +86,37 @@ void states_control_rush() {
   chassis.pid_drive_set(-2.8_in, 60, false);
   chassis.pid_wait();
 
-  chassis.pid_odom_set({{{6_in, 10_in}, fwd, DRIVE_SPEED},
-                        {{0_in, 20_in}, fwd, DRIVE_SPEED},
-                        {{0_in, 30_in}, fwd, DRIVE_SPEED}},
+  chassis.pid_odom_set({{{0_in, 24_in}, fwd, DRIVE_SPEED},
+                        {{12_in, 24_in}, fwd, DRIVE_SPEED},
+                        {{15_in, 24_in}, fwd, DRIVE_SPEED}},
                        true);
+  chassis.pid_wait_until_index_started(0);
+  chassis.pid_turn_set(250_deg, 127, fwd);
   chassis.pid_wait();
+
+  chassis.pid_wait_until_index_started(1);
+  chassis.pid_turn_set(209_deg, 127, fwd);
+  chassis.pid_wait();
+
+  pros::delay(800);
+
+  chassis.pid_drive_set(-33.25_in, 120, false);
+  chassis.pid_wait_until(-30.25_in);
+  lever(-90, 750);
+  scraper.set(false);
+
+  chassis.pid_drive_set(15_in, 100, false);
+  chassis.pid_wait();
+  chassis.pid_turn_set(165, 127, true);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-16.75_in, 100, false);
+  chassis.pid_wait();
+  chassis.pid_turn_set(210, 127, false);
+  chassis.pid_wait();
+  wing.set(false);
+  chassis.pid_drive_set(-14.85_in, 100, false);
+  chassis.pid_wait();
+  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
 }
 
 void midgoal() {
