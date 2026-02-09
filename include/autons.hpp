@@ -22,3 +22,5 @@ void midgoal();
 void sawp();
 void lowgoal();
 void wing_rush();
+void drive_off();
+void states_control_rush();

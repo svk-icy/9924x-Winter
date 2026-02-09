@@ -66,10 +66,38 @@ void default_constants() {
   chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
 }
 
+void drive_off() {
+  intake_s1.move(-127);
+  wing.set(true);
+}
+
+void states_control_rush() {
+  chassis.drive_sensor_reset();
+  chassis.drive_angle_set(0);
+  chassis.odom_xy_set(0, 0);
+  intake_s1.move(-127);
+
+  chassis.pid_drive_set(32.71_in, 60, false);
+  chassis.pid_wait_until(15.71_in);
+  scraper.set(true);
+
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-2.8_in, 60, false);
+  chassis.pid_wait();
+
+  chassis.pid_odom_set({{{6_in, 10_in}, fwd, DRIVE_SPEED},
+                        {{0_in, 20_in}, fwd, DRIVE_SPEED},
+                        {{0_in, 30_in}, fwd, DRIVE_SPEED}},
+                       true);
+  chassis.pid_wait();
+}
+
 void midgoal() {
   chassis.drive_sensor_reset();
   chassis.drive_angle_set(0);
   chassis.odom_xy_set(0, 0);
+  wing.set(true);
   scraper.set(false);
   lift.set(true);
   intake_s1.move(-127);
@@ -88,7 +116,7 @@ void midgoal() {
 
   intake_s1.move(0);
 
-  chassis.pid_drive_set(-19_in, 90, false);
+  chassis.pid_drive_set(-18.75_in, 90, false);
   chassis.pid_wait();
 
   lever(-70, 500);
@@ -111,10 +139,23 @@ void midgoal() {
 
   chassis.pid_drive_set(-33.25_in, 120, false);
   chassis.pid_wait_until(-30.25_in);
-  lever(-90, 1000);
+  lever(-90, 750);
   scraper.set(false);
 
-  chassis.pid_turn_set(120_deg, 127, false);
+  chassis.pid_drive_set(15_in, 100, false);
+  chassis.pid_wait();
+  chassis.pid_turn_set(165, 127, true);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-16.75_in, 100, false);
+  chassis.pid_wait();
+  chassis.pid_turn_set(210, 127, false);
+  chassis.pid_wait();
+  wing.set(false);
+  chassis.pid_drive_set(-14.85_in, 100, false);
+  chassis.pid_wait();
+  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
+
+  /*chassis.pid_turn_set(120_deg, 127, false);
   chassis.pid_wait();
 
   wing.set(true);
@@ -130,7 +171,7 @@ void midgoal() {
   wing.set(false);
 
   chassis.pid_turn_set(75_deg, 127, false);
-  chassis.pid_wait();
+  chassis.pid_wait();*/
 
   /*chassis.pid_odom_set({{23.7, 41.0}, rev, 80});
   chassis.pid_wait();
@@ -259,7 +300,7 @@ void sawp() {
   lever(-110, 600);
   scraper.set(false);
   intake_s1.move(-127);
-  chassis.pid_turn_set(110_deg, 127, false);
+  chassis.pid_turn_set(123_deg, 127, false);
   chassis.pid_wait();
 
   chassis.pid_drive_set(58_in, 100, false);

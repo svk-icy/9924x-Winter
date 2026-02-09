@@ -58,6 +58,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
+
       {"mid goal ", midgoal},
       {"low goal ", lowgoal},
       {"Solo awp", sawp},
