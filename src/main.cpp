@@ -30,7 +30,6 @@ ez::tracking_wheel vert_tracker(-2, 2, -0.46);  // This tracking wheel is parall
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-  wing.set(true);
   // Print our branding over your terminal :D
   ez::ez_template_print();
 
@@ -320,7 +319,7 @@ void opcontrol() {
       lever_stall_time = 0;
     } else if (launching || rewinding) {
       levermotor.set_brake_mode(MOTOR_BRAKE_COAST);
-      cmd = 75;
+      cmd = 127;
       rewinding = true;
       launching = false;
       hood.set(false);

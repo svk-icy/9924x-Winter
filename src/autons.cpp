@@ -223,7 +223,7 @@ void midgoal() {
 
   chassis.pid_turn_set(260_deg, 127, false);
 
-  chassis.pid_odom_set({{-31.31, 25.97}, fwd, 100});
+  chassis.pid_odom_set({{-33.31, 25.97}, fwd, 100});
   chassis.pid_wait();
 
   chassis.pid_turn_set(209_deg, 127, false);
@@ -255,7 +255,7 @@ void midgoal() {
 
 void lowgoal() {
   intake_s1.move(-127);
-  chassis.pid_odom_set({{0, 42.1}, fwd, 110});
+  chassis.pid_odom_set({{0, 44.1}, fwd, 110});
   chassis.pid_wait();
 
   chassis.pid_turn_set(90_deg, 127, false);
